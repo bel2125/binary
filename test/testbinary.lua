@@ -119,41 +119,69 @@ print("bget tested")
 
 -- Test toarray/fromarray for bits
 strdata = "\x68\x95";
-bitarr = {false, true, true, false, true, false, false, false,
-          true, false, false, true, false, true, false, true,
+bitarr = {false, false, false, true, false, true, true, false,
+          true, false, true, false, true, false, false, true,
           };
-bitnumarr = {0, 1, 1, 0, 1, 0, 0, 0,
-             1, 0, 0, 1, 0, 1, 0, 1,
+bitnumarr = {0, 0, 0, 1, 0, 1, 1, 0,
+             1, 0, 1, 0, 1, 0, 0, 1,
              };
-bytearr = {64+32+8, 128+16+4+1};
+twobitarr = {0, 2, 2, 1, 1, 1, 1, 2};
+octalarr = {0, 5, 5, 2, 1, 1};
 nibblearr = {8, 6, 5, 9};
-
-
-str = binary.toarray(strdata, 8)
-asserteq(str, bytearr, "toarray (8) failed");
-
-
-print(str, type(str), #str);
-for k,v in pairs(str) do print(k,v,bytearr[k]) end
-
+fivebitarr = {8, 11, 5, 1};
+sixbitarr = {octalarr[2]*8+octalarr[1], octalarr[4]*8+octalarr[3], 
+             octalarr[6]*8+octalarr[5]};
+sevenbitarr = {64+32+8, 2+8+32, 2};
+bytearr = {64+32+8, 128+16+4+1};
+ninebitarr = {octalarr[3]*64+octalarr[2]*8+octalarr[1], 
+              octalarr[6]*64+octalarr[5]*8+octalarr[4]};
+wordarr = {bytearr[2]*256+bytearr[1]};
+dwordarr = {bytearr[2]*256+bytearr[1]};
 
 str = binary.toarray(strdata, 0)
 asserteq(str, bitarr, "toarray (0) failed");
 
-print(str, type(str), #str);
-for k,v in pairs(str) do print(k,v,bitarr[k]) end
-
-
 str = binary.toarray(strdata, 1)
-asserteq(str, bitnumarr, "toarray (0) failed");
+asserteq(str, bitnumarr, "toarray (1) failed");
 
-print(str, type(str), #str);
-for k,v in pairs(str) do print(k,v,bitnumarr[k]) end
+str = binary.toarray(strdata, 2)
+asserteq(str, twobitarr, "toarray (2) failed");
 
-
+str = binary.toarray(strdata, 3)
+asserteq(str, octalarr, "toarray (3) failed");
 
 str = binary.toarray(strdata, 4)
 asserteq(str, nibblearr, "toarray (4) failed");
 
-print(str, type(str), #str);
-for k,v in pairs(str) do print(k,v,nibblearr[k]) end
+str = binary.toarray(strdata, 5)
+asserteq(str, fivebitarr, "toarray (5) failed");
+
+str = binary.toarray(strdata, 6)
+asserteq(str, sixbitarr, "toarray (6) failed");
+
+str = binary.toarray(strdata, 7)
+asserteq(str, sevenbitarr, "toarray (7) failed");
+
+str = binary.toarray(strdata, 8)
+asserteq(str, bytearr, "toarray (8) failed");
+
+str = binary.toarray(strdata, 9)
+asserteq(str, ninebitarr, "toarray (9) failed");
+
+str = binary.toarray(strdata, 16)
+asserteq(str, wordarr, "toarray (16) failed");
+
+--for i=17,31 do
+--  str = binary.toarray(strdata .. "\x00\x00", i)
+--  asserteq(str, {wordarr[1], 0}, "toarray ("..i..") failed");
+--end
+
+-- TODO: if strlen is not an integer multiple of bits: add 0s automatically in C
+str = binary.toarray(strdata .. "\x00\x00", 32)
+asserteq(str, dwordarr, "toarray (32) failed");
+
+--print(str, type(str), #str);
+--for k,v in pairs(str) do print(k,v,wordarr[k]) end
+
+print("toarray tested")
+

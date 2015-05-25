@@ -115,7 +115,8 @@ static int binary_not (lua_State *L) {
 static luabin_bits binextract (const unsigned char * src, size_t offs, size_t len) {
   luabin_bits xr = 0;
   luabin_bits xdig = dig2filter(len);
-  memcpy(&xr, src + (offs/8), (len+7)/8);
+  size_t split = ((offs+len-1)%8) < (offs%8) ? 1 : 0;
+  memcpy(&xr, src + (offs/8), (len+7)/8 + split);
   xr >>= (offs%8);
   return xr & xdig;
 }
@@ -236,12 +237,7 @@ static const luaL_Reg binarylib[] = {
 ** Open binary library
 */
 LUAMOD_API int luaopen_binary (lua_State *L) {
-  int i;
   luaL_newlib(L, binarylib);
-
-  /* IEEE double uses 52 bits, TODO: code if lua_Number != double */
-  lua_pushunsigned(L, 52);
-  lua_setfield(L, -2, "numbits");
   return 1;
 }
 
